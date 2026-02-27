@@ -18,12 +18,24 @@ class CompoundInterestCalculator {
         // Year selector for monthly view
         document.getElementById('year-select').addEventListener('change', () => this.updateMonthlyTable());
 
-        // Calculate on input change for real-time updates
+        // Calculate on input change for real-time updates (but only if we have valid data)
         const inputs = ['principal', 'rate', 'years', 'compound', 'monthly-contribution'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', () => {
                 if (this.calculationData) {
-                    this.calculate();
+                    // Only auto-update if we have valid existing calculations
+                    const principal = parseFloat(document.getElementById('principal').value) || 0;
+                    const rate = parseFloat(document.getElementById('rate').value) || 0;
+                    const years = parseInt(document.getElementById('years').value) || 0;
+                    
+                    // Gracefully handle real-time updates
+                    if (principal > 0 && rate > 0 && years > 0) {
+                        this.hideValidationMessage();
+                        this.calculate();
+                    } else {
+                        // Don't show errors during typing, just clear results if invalid
+                        document.getElementById('results-section').style.display = 'none';
+                    }
                 }
             });
         });
@@ -36,11 +48,19 @@ class CompoundInterestCalculator {
         const compound = parseInt(document.getElementById('compound').value) || 12;
         const monthlyContribution = parseFloat(document.getElementById('monthly-contribution').value) || 0;
 
-        if (principal <= 0 || rate <= 0 || years <= 0) {
-            alert('Please enter valid positive values for all fields.');
+        // Only validate when user explicitly calculates, not on input changes
+        if (principal <= 0 && rate <= 0 && years <= 0) {
+            // If everything is empty/zero, just hide results gracefully
+            document.getElementById('results-section').style.display = 'none';
             return;
         }
 
+        if (principal <= 0 || rate <= 0 || years <= 0) {
+            this.showValidationMessage('Please enter positive values for initial amount, interest rate, and time period.');
+            return;
+        }
+
+        this.hideValidationMessage();
         this.calculationData = this.calculateCompoundInterest(principal, rate, years, compound, monthlyContribution);
         this.displayResults();
     }
@@ -550,6 +570,25 @@ class CompoundInterestCalculator {
             `;
             body.appendChild(row);
         });
+    }
+
+    showValidationMessage(message) {
+        let messageEl = document.getElementById('validation-message');
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.id = 'validation-message';
+            messageEl.className = 'validation-message';
+            document.querySelector('.calculator-form').appendChild(messageEl);
+        }
+        messageEl.textContent = message;
+        messageEl.style.display = 'block';
+    }
+
+    hideValidationMessage() {
+        const messageEl = document.getElementById('validation-message');
+        if (messageEl) {
+            messageEl.style.display = 'none';
+        }
     }
 
     getMonthName(month) {

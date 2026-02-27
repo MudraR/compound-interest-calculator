@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compound Interest Calculator</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Compound Interest Calculator</h1>
-            <p>Calculate your investment growth over time</p>
-        </header>
-
         <main>
             <div class="calculator-card">
+                <div class="calculator-header">
+                    <h1><i class="fas fa-calculator"></i> Compound Interest Calculator</h1>
+                    <p>Calculate your investment growth over time</p>
+                </div>
                 <h2>Investment Details</h2>
                 <form class="calculator-form">
                     <div class="form-group">
@@ -52,34 +53,76 @@
                 </form>
             </div>
 
-            <div class="results-section" id="results-section" style="display: none;">
+                <div class="results-section" id="results-section" style="display: none;">
                 <div class="summary-card">
-                    <h2>Investment Summary</h2>
+                    <h2><i class="fas fa-chart-line"></i> Investment Summary</h2>
                     <div class="summary-grid">
                         <div class="summary-item">
+                            <div class="summary-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
                             <span class="label">Total Invested</span>
                             <span class="value" id="total-invested">$0</span>
+                            <div class="sparkline" id="invested-sparkline"></div>
                         </div>
                         <div class="summary-item">
+                            <div class="summary-icon growth">
+                                <i class="fas fa-trending-up"></i>
+                            </div>
                             <span class="label">Total Interest</span>
-                            <span class="value" id="total-interest">$0</span>
+                            <span class="value growth-value" id="total-interest">$0</span>
+                            <div class="growth-indicator" id="interest-growth">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="interest-percentage">0%</span>
+                            </div>
+                            <div class="sparkline" id="interest-sparkline"></div>
                         </div>
-                        <div class="summary-item">
+                        <div class="summary-item highlight-card">
+                            <div class="summary-icon final">
+                                <i class="fas fa-trophy"></i>
+                            </div>
                             <span class="label">Final Balance</span>
                             <span class="value highlight" id="final-balance">$0</span>
+                            <div class="growth-indicator" id="balance-growth">
+                                <i class="fas fa-rocket"></i>
+                                <span id="balance-multiplier">0x</span>
+                            </div>
+                            <div class="sparkline" id="balance-sparkline"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-area"></i> Growth Visualization</h3>
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Investment Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="breakdownChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div class="table-controls">
-                    <h2>Growth Breakdown</h2>
-                    <div class="view-toggle">
-                        <button class="toggle-btn active" data-view="yearly">Yearly View</button>
-                        <button class="toggle-btn" data-view="monthly">Monthly View</button>
-                    </div>
-                    <div class="year-selector" id="year-selector" style="display: none;">
-                        <label for="year-select">Select Year:</label>
-                        <select id="year-select"></select>
+                    <h2><i class="fas fa-table"></i> Growth Breakdown</h2>
+                    <div class="controls-row">
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" data-view="yearly">
+                                <i class="fas fa-calendar-alt"></i> Yearly View
+                            </button>
+                            <button class="toggle-btn" data-view="monthly">
+                                <i class="fas fa-calendar"></i> Monthly View
+                            </button>
+                        </div>
+                        <div class="year-selector" id="year-selector" style="display: none;">
+                            <label for="year-select"><i class="fas fa-filter"></i> Select Year:</label>
+                            <select id="year-select"></select>
+                        </div>
                     </div>
                 </div>
 

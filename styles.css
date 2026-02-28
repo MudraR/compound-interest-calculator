@@ -660,6 +660,35 @@ tr:hover .currency::before {
     }
 }
 
+.withdrawal {
+    color: #fbbf24 !important;
+    font-weight: 600;
+}
+
+.years-remaining {
+    color: #a0aec0;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.years-remaining:before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: #fbbf24;
+    transform: translateY(-50%);
+    transition: height 0.3s ease;
+    border-radius: 1px;
+}
+
+tr:hover .years-remaining:before {
+    height: 60%;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 1rem;

@@ -485,6 +485,8 @@ class CompoundInterestCalculator {
                 <th><i class="fas fa-plus-circle"></i> Annual Contributions</th>
                 <th><i class="fas fa-trending-up"></i> Interest Earned</th>
                 <th><i class="fas fa-wallet"></i> Ending Balance</th>
+                <th><i class="fas fa-hand-holding-usd"></i> 4% Withdrawal</th>
+                <th><i class="fas fa-hourglass-half"></i> Years Remaining</th>
                 <th><i class="fas fa-piggy-bank"></i> Total Invested</th>
                 <th><i class="fas fa-chart-line"></i> Total Interest</th>
             </tr>
@@ -507,6 +509,10 @@ class CompoundInterestCalculator {
                 growthBadge = `<div class="growth-badge">+${this.formatCurrency(dollarGrowth)} (+${percentGrowth}%)</div>`;
             }
             
+            // Calculate 4% withdrawal and years remaining
+            const annualWithdrawal = yearData.endingBalance * 0.04;
+            const yearsRemaining = this.calculateYearsRemaining(yearData.endingBalance, annualWithdrawal);
+            
             row.innerHTML = `
                 <td><strong><i class="fas fa-calendar"></i> ${yearData.year}</strong></td>
                 <td class="currency">${this.formatCurrency(yearData.startingBalance)}</td>
@@ -515,6 +521,8 @@ class CompoundInterestCalculator {
                 <td class="currency"><strong>${this.formatCurrency(yearData.endingBalance)}</strong>
                     ${growthBadge}
                 </td>
+                <td class="currency withdrawal">${this.formatCurrency(annualWithdrawal)}</td>
+                <td class="years-remaining">${yearsRemaining}</td>
                 <td class="currency">${this.formatCurrency(yearData.totalContributions)}</td>
                 <td class="currency positive">${this.formatCurrency(yearData.totalInterest)}</td>
             `;
@@ -606,6 +614,35 @@ class CompoundInterestCalculator {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(amount);
+    }
+
+    calculateYearsRemaining(currentBalance, annualWithdrawal) {
+        if (annualWithdrawal <= 0) return '∞';
+        
+        // Get the current interest rate for calculations
+        const rate = parseFloat(document.getElementById('rate').value) || 7;
+        const annualRate = rate / 100;
+        
+        // If withdrawal is less than annual growth, money lasts forever
+        const annualGrowth = currentBalance * annualRate;
+        if (annualWithdrawal <= annualGrowth) {
+            return '∞';
+        }
+        
+        // Calculate years using withdrawal formula with compound interest
+        let balance = currentBalance;
+        let years = 0;
+        const maxYears = 100; // Prevent infinite loops
+        
+        while (balance > 0 && years < maxYears) {
+            // Add interest for the year
+            balance *= (1 + annualRate);
+            // Subtract withdrawal
+            balance -= annualWithdrawal;
+            years++;
+        }
+        
+        return years >= maxYears ? '100+' : years.toString();
     }
 }
 
